@@ -21,99 +21,249 @@
 
   <!-- Search Input -->
   <div class="search-container">
-    <span class="p-input-icon-left">
-      <i class="pi pi-search"></i>
-      <input pInputText type="text" [(ngModel)]="searchText"
-             (input)="onSearch()" placeholder="Search by name or ID" />
-    </span>
+    <div class="search-left">
+      <span class="p-input-icon-left">
+        <i class="pi pi-search"></i>
+        <input pInputText type="text" [(ngModel)]="searchText"
+               (input)="onSearch()" placeholder="Search by name or ID" />
+      </span>
 
-    <!-- Show Favorites Toggle -->
-    <p-checkbox [(ngModel)]="showFavoritesOnly"
-                (onChange)="onShowFavoritesChange()"
-                [binary]="true"
-                label="Show favorites only"></p-checkbox>
+      <!-- Show Favorites Toggle -->
+      <p-checkbox [(ngModel)]="showFavoritesOnly"
+                  (onChange)="onShowFavoritesChange()"
+                  [binary]="true"
+                  label="Show favorites only"></p-checkbox>
+    </div>
+
+    <!-- View Mode Switcher -->
+    <div class="view-mode-switcher">
+      <button class="view-button"
+              [class.active]="viewMode === 'list'"
+              (click)="setViewMode('list')"
+              title="List View">
+        <i class="pi pi-list"></i>
+      </button>
+      <button class="view-button"
+              [class.active]="viewMode === 'columns'"
+              (click)="setViewMode('columns')"
+              title="Column View">
+        <i class="pi pi-columns"></i>
+      </button>
+    </div>
   </div>
 
-  <!-- Data Table -->
-  <p-table [value]="tableRows"
-           [loading]="tableLoading"
-           [paginator]="true"
-           [rows]="50"
-           [totalRecords]="pagination.total"
-           [sortField]="sortBy.column"
-           [sortOrder]="sortBy.order === 'ASC' ? 1 : -1"
-           (onSort)="onSort($event)"
-           styleClass="p-datatable-striped">
+  <!-- Main Content Area with Conditional Views -->
+  <div class="main-content" [class.column-view-mode]="viewMode === 'columns'">
 
-    <ng-template pTemplate="header">
-      <tr>
-        <th pSortableColumn="name" style="width: 20%">
-          Name <p-sortIcon field="name"></p-sortIcon>
-        </th>
-        <th style="width: 12%">Architecture</th>
-        <th style="width: 12%">OS</th>
-        <th style="width: 12%">Type</th>
-        <th style="width: 12%">Status</th>
-        <th pSortableColumn="createdBy" style="width: 15%">
-          Created By <p-sortIcon field="createdBy"></p-sortIcon>
-        </th>
-        <th style="width: 17%">Actions</th>
-      </tr>
-    </ng-template>
+    <!-- List View (Traditional Table) -->
+    <div class="list-view-container" *ngIf="viewMode === 'list'">
+      <p-table [value]="tableRows"
+               [loading]="tableLoading"
+               [paginator]="true"
+               [rows]="50"
+               [totalRecords]="pagination.total"
+               [sortField]="sortBy.column"
+               [sortOrder]="sortBy.order === 'ASC' ? 1 : -1"
+               (onSort)="onSort($event)"
+               styleClass="p-datatable-striped">
 
-    <ng-template pTemplate="body" let-row>
-      <tr>
-        <!-- Name with favorite star -->
-        <td>
-          <i class="pi favorite-icon"
-             [ngClass]="row.favorite ? 'pi-star-fill' : 'pi-star'"
-             (click)="toggleFavorite(row)"
-             [title]="row.favorite ? 'Unmark as favorite' : 'Mark as favorite'"></i>
-          <i *ngIf="row.is_singleton"
-             class="pi pi-circle-fill singleton-icon"
-             title="This target is a singleton"></i>
-          <span>{{ row.name }}</span>
-        </td>
-        <td>{{ row.architecture || '-' }}</td>
-        <td>{{ row.os || '-' }}</td>
-        <td>{{ row.target_type }}</td>
-        <td>
-          <span class="status-badge" [ngClass]="row.status === 'in_use' ? 'status-in-use' : 'status-available'">
-            {{ row.status === 'in_use' ? 'In Use' : 'Available' }}
-          </span>
-        </td>
-        <td>
-          <span *ngIf="row.createdBy">{{ row.createdBy }}</span>
-          <i *ngIf="!row.createdBy"
-             class="pi pi-exclamation-triangle warning-icon"
-             title="This target cannot be reserved until a 'Created By' value is set"></i>
-        </td>
-        <td>
-          <div style="display:flex; gap:0.5rem; align-items:center;">
-            <p-button label="RESERVE"
-                      [disabled]="!row.isReservable || !row.createdBy || row.status === 'in_use'"
-                      severity="primary"
-                      size="small"
-                      (onClick)="onReserve(row)"></p-button>
-            <p-button label="REMOVE"
-                      [disabled]="row.status === 'in_use'"
-                      severity="danger"
-                      size="small"
-                      (onClick)="onRemove(row)"></p-button>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name" style="width: 20%">
+              Name <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th style="width: 12%">Architecture</th>
+            <th style="width: 12%">OS</th>
+            <th style="width: 12%">Type</th>
+            <th style="width: 12%">Status</th>
+            <th pSortableColumn="createdBy" style="width: 15%">
+              Created By <p-sortIcon field="createdBy"></p-sortIcon>
+            </th>
+            <th style="width: 17%">Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-row>
+          <tr>
+            <!-- Name with favorite star -->
+            <td>
+              <i class="pi favorite-icon"
+                 [ngClass]="row.favorite ? 'pi-star-fill' : 'pi-star'"
+                 (click)="toggleFavorite(row)"
+                 [title]="row.favorite ? 'Unmark as favorite' : 'Mark as favorite'"></i>
+              <i *ngIf="row.is_singleton"
+                 class="pi pi-circle-fill singleton-icon"
+                 title="This target is a singleton"></i>
+              <span>{{ row.name }}</span>
+            </td>
+            <td>{{ row.architecture || '-' }}</td>
+            <td>{{ row.os || '-' }}</td>
+            <td>{{ row.target_type }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="row.status === 'in_use' ? 'status-in-use' : 'status-available'">
+                {{ row.status === 'in_use' ? 'In Use' : 'Available' }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="row.createdBy">{{ row.createdBy }}</span>
+              <i *ngIf="!row.createdBy"
+                 class="pi pi-exclamation-triangle warning-icon"
+                 title="This target cannot be reserved until a 'Created By' value is set"></i>
+            </td>
+            <td>
+              <div style="display:flex; gap:0.5rem; align-items:center;">
+                <p-button label="RESERVE"
+                          [disabled]="!row.isReservable || !row.createdBy || row.status === 'in_use'"
+                          severity="primary"
+                          size="small"
+                          (onClick)="onReserve(row)"></p-button>
+                <p-button label="REMOVE"
+                          [disabled]="row.status === 'in_use'"
+                          severity="danger"
+                          size="small"
+                          (onClick)="onRemove(row)"></p-button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <!-- Empty message -->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" style="text-align: center; padding: 2rem;">
+              There are no Virtual Targets that match your current search filters.
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Column View (List on left, details on right) -->
+    <div class="column-view-container" *ngIf="viewMode === 'columns'">
+      <!-- Left Panel: List of targets -->
+      <div class="column-list-panel">
+        <div class="column-header">Virtual Targets</div>
+        <div class="column-list" *ngIf="!tableLoading && tableRows.length > 0">
+          <div class="column-list-item"
+               *ngFor="let target of tableRows"
+               [class.selected]="selectedTargetForDetail?.id === target.id"
+               (click)="onRowClick(target)">
+            <div class="item-header">
+              <i class="pi favorite-icon"
+                 [ngClass]="target.favorite ? 'pi-star-fill' : 'pi-star'"
+                 (click)="toggleFavorite(target); $event.stopPropagation()"
+                 [title]="target.favorite ? 'Unmark as favorite' : 'Mark as favorite'"></i>
+              <i *ngIf="target.is_singleton"
+                 class="pi pi-circle-fill singleton-icon"
+                 title="This target is a singleton"></i>
+              <span class="item-name">{{ target.name }}</span>
+            </div>
+            <div class="item-details">
+              <span class="item-type">{{ target.target_type }}</span>
+              <span class="item-status"
+                    [ngClass]="target.status === 'in_use' ? 'status-in-use' : 'status-available'">
+                {{ target.status === 'in_use' ? 'In Use' : 'Available' }}
+              </span>
+            </div>
           </div>
-        </td>
-      </tr>
-    </ng-template>
+        </div>
 
-    <!-- Empty message -->
-    <ng-template pTemplate="emptymessage">
-      <tr>
-        <td colspan="7" style="text-align: center; padding: 2rem;">
-          There are no Virtual Targets that match your current search filters.
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+        <!-- Loading state -->
+        <div class="column-loading" *ngIf="tableLoading">
+          <i class="pi pi-spin pi-spinner"></i>
+          <span>Loading targets...</span>
+        </div>
+
+        <!-- Empty state -->
+        <div class="column-empty" *ngIf="!tableLoading && tableRows.length === 0">
+          <i class="pi pi-inbox"></i>
+          <span>No virtual targets found</span>
+        </div>
+      </div>
+
+      <!-- Right Panel: Target details -->
+      <div class="column-detail-panel">
+        <div *ngIf="selectedTargetForDetail" class="detail-content">
+          <div class="detail-header">
+            <h3>{{ selectedTargetForDetail.name }}</h3>
+            <span class="detail-status"
+                  [ngClass]="selectedTargetForDetail.status === 'in_use' ? 'status-in-use' : 'status-available'">
+              {{ selectedTargetForDetail.status === 'in_use' ? 'In Use' : 'Available' }}
+            </span>
+          </div>
+
+          <div class="detail-body">
+            <div class="detail-section">
+              <h4>Basic Information</h4>
+              <div class="detail-row">
+                <label>Target ID</label>
+                <span>{{ selectedTargetForDetail.id }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Architecture</label>
+                <span>{{ selectedTargetForDetail.architecture || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>OS</label>
+                <span>{{ selectedTargetForDetail.os || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Type</label>
+                <span>{{ selectedTargetForDetail.target_type }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Platform</label>
+                <span>{{ selectedTargetForDetail.platform }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Created By</label>
+                <span>{{ selectedTargetForDetail.createdBy || '-' }}</span>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h4>Status Information</h4>
+              <div class="detail-row">
+                <label>Status</label>
+                <span class="status-badge"
+                      [ngClass]="selectedTargetForDetail.status === 'in_use' ? 'status-in-use' : 'status-available'">
+                  {{ selectedTargetForDetail.status === 'in_use' ? 'In Use' : 'Available' }}
+                </span>
+              </div>
+              <div class="detail-row">
+                <label>Reservable</label>
+                <span>{{ selectedTargetForDetail.isReservable ? 'Yes' : 'No' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Singleton</label>
+                <span>{{ selectedTargetForDetail.is_singleton ? 'Yes' : 'No' }}</span>
+              </div>
+            </div>
+
+            <div class="detail-actions">
+              <p-button label="RESERVE"
+                        [disabled]="!selectedTargetForDetail.isReservable || !selectedTargetForDetail.createdBy || selectedTargetForDetail.status === 'in_use'"
+                        severity="primary"
+                        size="large"
+                        (onClick)="onReserve(selectedTargetForDetail)"></p-button>
+              <p-button label="REMOVE"
+                        [disabled]="selectedTargetForDetail.status === 'in_use'"
+                        severity="danger"
+                        size="large"
+                        (onClick)="onRemove(selectedTargetForDetail)"></p-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty detail panel -->
+        <div *ngIf="!selectedTargetForDetail" class="detail-empty">
+          <i class="pi pi-arrow-left"></i>
+          <h3>Select a Target</h3>
+          <p>Click on a target from the list to view its details</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Reserve Confirmation Dialog -->
   <p-dialog header="Reserve Virtual Target"

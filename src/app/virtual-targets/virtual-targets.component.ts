@@ -39,6 +39,11 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
   showFavoritesOnly = false;
   sortBy = { column: 'name', order: 'ASC' };
 
+  // View mode: 'list' or 'columns'
+  viewMode: 'list' | 'columns' = 'list';
+  // Currently selected target for column view
+  selectedTargetForDetail: VirtualTarget | null = null;
+
   showReserveDialog = false;
   selectedTarget: VirtualTarget | null = null;
 
@@ -122,6 +127,20 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
     this.sortBy.column = event.field;
     this.sortBy.order = event.order === 1 ? 'ASC' : 'DESC';
     this.loadData();
+  }
+
+  setViewMode(mode: 'list' | 'columns') {
+    this.viewMode = mode;
+    // Clear selection when switching views
+    if (mode === 'list') {
+      this.selectedTargetForDetail = null;
+    }
+  }
+
+  onRowClick(target: VirtualTarget) {
+    if (this.viewMode === 'columns') {
+      this.selectedTargetForDetail = target;
+    }
   }
 
   toggleFavorite(row: VirtualTarget) {
