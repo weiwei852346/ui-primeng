@@ -1,0 +1,68 @@
+<div class="terminal-interaction-page">
+  <!-- Header Section -->
+  <div class="page-header">
+    <h2>Terminal Interaction</h2>
+    <p-button label="Back"
+              icon="pi pi-arrow-left"
+              severity="secondary"
+              (onClick)="goBack()"></p-button>
+  </div>
+
+  <div class="splitter-wrapper">
+    <p-splitter [style]="{'height': '100%'}" [panelSizes]="[70, 30]">
+
+    <!-- 左侧：终端区域 -->
+    <ng-template pTemplate>
+      <div class="terminal-panel">
+        <!-- 连接状态指示器 -->
+        <div class="status-indicator" [ngClass]="connectionStatus.connected ? 'connected' : 'disconnected'">
+          <i class="pi" [ngClass]="connectionStatus.connected ? 'pi-check-circle' : 'pi-times-circle'"></i>
+          <span>{{ connectionStatus.connected ? 'Connected' : 'Disconnected' }}</span>
+        </div>
+
+        <!-- xterm.js 容器 -->
+        <div #terminalContainer class="terminal-container"></div>
+      </div>
+    </ng-template>
+
+    <!-- 右侧：信息与操作区 -->
+    <ng-template pTemplate>
+      <div class="info-panel">
+        <!-- 目标机信息卡片 -->
+        <p-card header="Target Information">
+          <div class="info-item">
+            <label>Name:</label>
+            <span>{{ targetInfo?.name }}</span>
+          </div>
+          <div class="info-item">
+            <label>ID:</label>
+            <span>{{ targetInfo?.barcode }}</span>
+          </div>
+          <div class="info-item">
+            <label>Platform:</label>
+            <span>{{ targetInfo?.platform }}</span>
+          </div>
+          <div class="info-item">
+            <label>Architecture:</label>
+            <span>{{ targetInfo?.architecture }}</span>
+          </div>
+        </p-card>
+
+        <!-- 操作按钮区 -->
+        <div class="action-buttons">
+          <p-button label="Reconnect"
+                    icon="pi pi-refresh"
+                    (onClick)="reconnect()"
+                    [disabled]="connectionStatus.connected"></p-button>
+          <p-button label="Disconnect"
+                    icon="pi pi-times"
+                    severity="danger"
+                    (onClick)="disconnect()"
+                    [disabled]="!connectionStatus.connected"></p-button>
+        </div>
+      </div>
+    </ng-template>
+
+  </p-splitter>
+  </div>
+</div>

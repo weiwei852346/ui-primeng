@@ -1,0 +1,20 @@
+<div class="layout-wrapper">
+  <!-- Sidebar -->
+  <div class="sidebar" [class.sidebar-collapsed]="!sidebarVisible">
+    <div class="sidebar-header">
+      <h3 *ngIf="sidebarVisible">VLab</h3>
+      <button pButton icon="pi pi-bars" class="p-button-text" (click)="toggleSidebar()"></button>
+    </div>
+    <div class="menu-container" *ngIf="sidebarVisible">
+      <div class="menu-item" *ngFor="let item of menuItems" [routerLink]="item.routerLink" routerLinkActive="active">
+        <i [class]="item.icon"></i>
+        <span>{{ item.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="layout-main">
+    <router-outlet></router-outlet>
+  </div>
+</div>
