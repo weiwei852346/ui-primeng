@@ -29,21 +29,21 @@
     <ng-template pTemplate>
       <div class="info-panel">
         <!-- 目标机信息卡片 -->
-        <p-card header="Target Information">
+        <p-card class="target-info-card">
           <div class="info-item">
-            <label>Name:</label>
+            <i class="pi pi-user"></i>
             <span>{{ targetInfo?.name }}</span>
           </div>
           <div class="info-item">
-            <label>ID:</label>
+            <i class="pi pi-id-card"></i>
             <span>{{ targetInfo?.barcode }}</span>
           </div>
           <div class="info-item">
-            <label>Platform:</label>
+            <i class="pi pi-desktop"></i>
             <span>{{ targetInfo?.platform }}</span>
           </div>
           <div class="info-item">
-            <label>Architecture:</label>
+            <i class="pi pi-cpu"></i>
             <span>{{ targetInfo?.architecture }}</span>
           </div>
         </p-card>
