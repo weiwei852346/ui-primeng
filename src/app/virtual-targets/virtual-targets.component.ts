@@ -66,21 +66,27 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
   // Current row data for menu
   currentMenuRowData: VirtualTarget | null = null;
 
-  // Get menu items with current row data
-  getMenuItems(row: VirtualTarget) {
-    return [
-      {
-        label: 'View',
-        icon: 'pi pi-eye',
-        command: () => this.openViewDetailsDialog(row)
-      },
-      {
-        label: 'Edit',
-        icon: 'pi pi-pencil',
-        command: () => this.openEditDialog(row)
+  // Menu items definition
+  menuItems = [
+    {
+      label: 'View',
+      icon: 'pi pi-eye',
+      command: () => {
+        if (this.currentMenuRowData) {
+          this.openViewDetailsDialog(this.currentMenuRowData);
+        }
       }
-    ];
-  }
+    },
+    {
+      label: 'Edit',
+      icon: 'pi pi-pencil',
+      command: () => {
+        if (this.currentMenuRowData) {
+          this.openEditDialog(this.currentMenuRowData);
+        }
+      }
+    }
+  ];
 
   showRemoveDialog = false;
   targetToRemove: VirtualTarget | null = null;

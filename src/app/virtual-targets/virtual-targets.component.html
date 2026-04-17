@@ -124,10 +124,12 @@
                           (onClick)="onRemove(row)"></p-button>
                 <div style="position:relative; display:inline-block;">
                   <p-menu #menu
-                          [model]="getMenuItems(row)"
+                          [model]="menuItems"
                           [popup]="true"
                           appendTo="body"
-                          [style]="{'min-width': '120px'}"></p-menu>
+                          [style]="{'min-width': '120px'}"
+                          (onHide)="currentMenuRowData = null"
+                          (onShow)="currentMenuRowData = row"></p-menu>
                   <p-button icon="pi pi-ellipsis-v"
                             severity="secondary"
                             rounded
