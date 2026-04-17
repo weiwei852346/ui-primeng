@@ -11,6 +11,11 @@ import { WebsocketTerminalService } from '../core/services/websocket-terminal.se
 import { TerminalConnectionStatus } from '../shared/models/terminal-connection.interface';
 import { VirtualTarget } from '../shared/models/virtual-target.interface';
 
+export interface ReservedTarget extends VirtualTarget {
+  reservedAt: Date;
+  reservedBy: string;
+}
+
 @Component({
   selector: 'app-terminal-interaction',
   standalone: true,
@@ -34,7 +39,7 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
   private resizeObserver: ResizeObserver | null = null;
 
   connectionStatus: TerminalConnectionStatus = { connected: false };
-  targetInfo: VirtualTarget | null = null;
+  targetInfo: ReservedTarget | null = null;
   isFullscreen: boolean = false;
 
   constructor(
@@ -45,7 +50,6 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
   ngOnInit(): void {
     // const navigation = this.router.getCurrentNavigation();
     this.targetInfo = history.state?.['target'] as any; // 使用any类型来处理
-    console.log('target info', this.targetInfo)
 
     console.log('Terminal Interaction - targetInfo:', this.targetInfo);
 
@@ -58,17 +62,15 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
 
   getFormattedReserveTime(): string {
     if (this.targetInfo && 'reservedAt' in this.targetInfo) {
-      const reservedAt = (this.targetInfo as any).reservedAt;
-      if (reservedAt instanceof Date) {
-        return reservedAt.toLocaleString('en-US', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
-        });
-      }
+      const reservedAt = this.targetInfo.reservedAt;
+      return reservedAt.toLocaleString('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
     }
     return 'Not reserved';
   }
