@@ -42,8 +42,9 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
   ) {}
 
   ngOnInit(): void {
-    const navigation = this.router.getCurrentNavigation();
-    this.targetInfo = navigation?.extras.state?.['target'] as VirtualTarget;
+    // const navigation = this.router.getCurrentNavigation();
+    this.targetInfo = history.state?.['target'] as VirtualTarget;
+    console.log('target info', this.targetInfo)
 
     console.log('Terminal Interaction - targetInfo:', this.targetInfo);
 

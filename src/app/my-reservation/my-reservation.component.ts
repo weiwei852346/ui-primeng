@@ -39,6 +39,7 @@ export class MyReservationComponent implements OnInit {
   }
 
   onConnect(target: ReservedTarget) {
+    console.log('target is ', target)
     this.router.navigate(['/terminal-interaction'], {
       state: { target: target }
     });

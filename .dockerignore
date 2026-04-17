@@ -1,0 +1,69 @@
+# Docker构建时忽略的文件和目录
+
+# 开发相关文件
+node_modules/
+npm-debug.log
+yarn-error.log
+angular.json
+tsconfig.json
+tsconfig.app.json
+tsconfig.spec.json
+.editorconfig
+.vscode/
+.idea/
+
+# 构建输出
+dist/
+build/
+
+# 版本控制
+.git/
+.gitignore
+
+# 测试文件
+**/*.spec.ts
+**/*.test.ts
+
+# 临时文件
+.tmp/
+.temp/
+
+# 日志文件
+logs/
+*.log
+
+# 本地配置
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Docker相关文件（除了Dockerfile和docker-compose.yml）
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# 文档
+README.md
+CHANGELOG.md
+LICENSE
+docs/
+
+# IDE配置
+*.swp
+*.swo
+*.bak
+*~
+
+# 构建脚本
+build.sh
+deploy.sh
+start.sh
+
+# 本地开发服务器
+.nginx.conf
+nginx.conf.local
+
+# PrimeNG主题文件（在构建后生成）
+src/assets/primeicons/
