@@ -39,13 +39,25 @@
             <span>{{ targetInfo?.barcode }}</span>
           </div>
           <div class="info-item">
+            <i class="pi pi-tag"></i>
+            <span>{{ targetInfo?.target_type }}</span>
+          </div>
+          <div class="info-item">
+            <i class="pi pi-server"></i>
+            <span>{{ targetInfo?.os }}</span>
+          </div>
+          <div class="info-item">
             <i class="pi pi-desktop"></i>
             <span>{{ targetInfo?.platform }}</span>
           </div>
           <div class="info-item">
-            <i class="pi pi-cpu"></i>
+            <i class="pi pi-microchip"></i>
             <span>{{ targetInfo?.architecture }}</span>
           </div>
+          <!-- <div class="info-item">
+            <i class="pi pi-circle" [ngClass]="{'text-green-500': targetInfo?.status === 'available', 'text-red-500': targetInfo?.status === 'in_use'}"></i>
+            <span>{{ targetInfo?.status }}</span>
+          </div> -->
         </p-card>
 
         <!-- 操作按钮区 -->
