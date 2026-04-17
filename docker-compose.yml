@@ -15,6 +15,16 @@ services:
     networks:
       - app-network
 
+  websocket-server:
+    build:
+      context: ../websocket-server
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
