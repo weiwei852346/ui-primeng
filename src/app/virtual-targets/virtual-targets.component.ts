@@ -34,7 +34,7 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
   tableLoading = true;
   tableRows: VirtualTarget[] = [];
   pagination = { total: 0, offset: 0, pageSize: 50 };
-  platformFilter: 'SIMICS' | 'QEMU' = 'SIMICS';
+  platformFilter: 'Physical' | 'Virtual' = 'Physical';
   searchText = '';
   showFavoritesOnly = false;
   sortBy = { column: 'name', order: 'ASC' };
@@ -62,8 +62,8 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
     { label: 'Android', value: 'Android' }
   ];
   typeOptions = [
-    { label: 'SIMICS', value: 'SIMICS' },
-    { label: 'QEMU', value: 'QEMU' }
+    { label: 'Physical', value: 'Physical' },
+    { label: 'Virtual', value: 'Virtual' }
   ];
 
   constructor(
@@ -208,7 +208,11 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
       favorite: false,
       is_singleton: false,
       isReservable: true,
-      status: 'available'
+      status: 'available',
+      gateway: this.newTarget.gateway,
+      ip: this.newTarget.ip,
+      user: this.newTarget.user,
+      pass: this.newTarget.pass
     };
     this.virtualTargetControlService.addVirtualTarget(target);
     this.showAddDialog = false;

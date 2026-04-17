@@ -11,9 +11,9 @@
 
       <!-- Platform Filter -->
       <div class="platform-filter">
-        <p-radioButton name="platform" value="SIMICS" [(ngModel)]="platformFilter"
+        <p-radioButton name="platform" value="Physical" [(ngModel)]="platformFilter"
                        label="Physical" (onClick)="onPlatformChange()"></p-radioButton>
-        <p-radioButton name="platform" value="QEMU" [(ngModel)]="platformFilter"
+        <p-radioButton name="platform" value="Virtual" [(ngModel)]="platformFilter"
                        label="Virtual" (onClick)="onPlatformChange()"></p-radioButton>
       </div>
     </div>
@@ -316,34 +316,59 @@
             [draggable]="false"
             [resizable]="false">
     <div class="dialog-content">
-      <div class="form-row">
-        <label>Name</label>
-        <input pInputText type="text" [(ngModel)]="newTarget.name" placeholder="Enter target name" />
+      <!-- Basic Information Section -->
+      <div class="form-section">
+        <div class="section-title">Basic Information</div>
+        <div class="form-row">
+          <label>Name</label>
+          <input pInputText type="text" [(ngModel)]="newTarget.name" placeholder="Enter target name" />
+        </div>
+        <div class="form-row">
+          <label>Architecture</label>
+          <p-dropdown [options]="architectureOptions"
+                      [(ngModel)]="newTarget.architecture"
+                      placeholder="Select architecture"
+                      [style]="{width: '100%'}"></p-dropdown>
+        </div>
+        <div class="form-row">
+          <label>OS</label>
+          <p-dropdown [options]="osOptions"
+                      [(ngModel)]="newTarget.os"
+                      placeholder="Select OS"
+                      [style]="{width: '100%'}"></p-dropdown>
+        </div>
+        <div class="form-row">
+          <label>Type</label>
+          <p-dropdown [options]="typeOptions"
+                      [(ngModel)]="newTarget.target_type"
+                      placeholder="Select type"
+                      [style]="{width: '100%'}"></p-dropdown>
+        </div>
+        <div class="form-row">
+          <label>Created By</label>
+          <input pInputText type="text" [(ngModel)]="newTarget.createdBy" placeholder="Enter creator name" />
+        </div>
       </div>
-      <div class="form-row">
-        <label>Architecture</label>
-        <p-dropdown [options]="architectureOptions"
-                    [(ngModel)]="newTarget.architecture"
-                    placeholder="Select architecture"
-                    [style]="{width: '100%'}"></p-dropdown>
-      </div>
-      <div class="form-row">
-        <label>OS</label>
-        <p-dropdown [options]="osOptions"
-                    [(ngModel)]="newTarget.os"
-                    placeholder="Select OS"
-                    [style]="{width: '100%'}"></p-dropdown>
-      </div>
-      <div class="form-row">
-        <label>Type</label>
-        <p-dropdown [options]="typeOptions"
-                    [(ngModel)]="newTarget.target_type"
-                    placeholder="Select type"
-                    [style]="{width: '100%'}"></p-dropdown>
-      </div>
-      <div class="form-row">
-        <label>Created By</label>
-        <input pInputText type="text" [(ngModel)]="newTarget.createdBy" placeholder="Enter creator name" />
+
+      <!-- Connection Information Section -->
+      <div class="form-section">
+        <div class="section-title">Connection Information</div>
+        <div class="form-row">
+          <label>Gateway</label>
+          <input pInputText type="text" [(ngModel)]="newTarget.gateway" placeholder="e.g., 192.168.1.1:8080" />
+        </div>
+        <div class="form-row">
+          <label>IP</label>
+          <input pInputText type="text" [(ngModel)]="newTarget.ip" placeholder="e.g., 192.168.1.100:22" />
+        </div>
+        <div class="form-row">
+          <label>User</label>
+          <input pInputText type="text" [(ngModel)]="newTarget.user" placeholder="Enter username" />
+        </div>
+        <div class="form-row">
+          <label>Password</label>
+          <input type="password" [(ngModel)]="newTarget.pass" placeholder="Enter password" class="p-inputtext" />
+        </div>
       </div>
     </div>
     <ng-template pTemplate="footer">

@@ -13,8 +13,9 @@ export class WebsocketTerminalService {
   connect(targetId: string): void {
     this.disconnect();
 
-    //const url = `ws://localhost:3000/terminal/${targetId}`;
-    const url = `ws://192.168.2.182:3001`;
+    // const url = `ws://localhost:3000/terminal/${targetId}`;
+    // const url = `ws://192.168.2.182:3001`;
+    const url = `ws://192.168.2.182:3000/terminal/${targetId}?host=172.28.0.3&port=22&user=root&password=ljw123`
     this.socket = new WebSocket(url);
 
     this.socket.onopen = () => {

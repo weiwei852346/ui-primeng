@@ -286,6 +286,25 @@
       }
     }
 
+    .form-section {
+      margin-bottom: 2rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e2e8f0;
+      }
+    }
+
     .form-row {
       display: flex;
       flex-direction: column;
@@ -309,6 +328,10 @@
           border-color: #3b82f6;
           box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           outline: none;
+        }
+
+        &::placeholder {
+          color: #94a3b8;
         }
       }
     }
