@@ -49,6 +49,7 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
 
   showAddDialog = false;
   newTarget: Partial<VirtualTarget> = {};
+  addDialogPage: 1 | 2 = 1;
 
   showRemoveDialog = false;
   targetToRemove: VirtualTarget | null = null;
@@ -192,7 +193,16 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
 
   openAddDialog(): void {
     this.newTarget = {};
+    this.addDialogPage = 1;
     this.showAddDialog = true;
+  }
+
+  nextPage(): void {
+    this.addDialogPage = 2;
+  }
+
+  prevPage(): void {
+    this.addDialogPage = 1;
   }
 
   confirmAdd(): void {
@@ -222,6 +232,7 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
   cancelAdd(): void {
     this.showAddDialog = false;
     this.newTarget = {};
+    this.addDialogPage = 1;
   }
 
   onRemove(target: VirtualTarget): void {

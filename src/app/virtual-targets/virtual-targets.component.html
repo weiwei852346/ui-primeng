@@ -330,15 +330,15 @@
   </p-dialog>
 
   <!-- Add Virtual Target Dialog -->
-  <p-dialog header="Add Virtual Target"
+  <p-dialog [header]="addDialogPage === 1 ? 'Add Virtual Target - Step 1/2' : 'Add Virtual Target - Step 2/2'"
             [(visible)]="showAddDialog"
             [modal]="true"
             [style]="{width: '500px'}"
             [draggable]="false"
             [resizable]="false">
     <div class="dialog-content">
-      <!-- Basic Information Section -->
-      <div class="form-section">
+      <!-- Page 1: Basic Information Section -->
+      <div class="form-section" *ngIf="addDialogPage === 1">
         <div class="section-title">Basic Information</div>
         <div class="form-row">
           <label>Name</label>
@@ -371,8 +371,8 @@
         </div>
       </div>
 
-      <!-- Connection Information Section -->
-      <div class="form-section">
+      <!-- Page 2: Connection Information Section -->
+      <div class="form-section" *ngIf="addDialogPage === 2">
         <div class="section-title">Connection Information</div>
         <div class="form-row">
           <label>Gateway</label>
@@ -396,8 +396,18 @@
       <p-button label="Cancel"
                 severity="secondary"
                 (onClick)="cancelAdd()"></p-button>
+      <p-button label="Back"
+                severity="secondary"
+                *ngIf="addDialogPage === 2"
+                (onClick)="prevPage()"></p-button>
+      <p-button label="Next"
+                severity="primary"
+                *ngIf="addDialogPage === 1"
+                [disabled]="!newTarget.name"
+                (onClick)="nextPage()"></p-button>
       <p-button label="Add"
                 severity="primary"
+                *ngIf="addDialogPage === 2"
                 [disabled]="!newTarget.name"
                 (onClick)="confirmAdd()"></p-button>
     </ng-template>
