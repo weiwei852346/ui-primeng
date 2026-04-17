@@ -14,7 +14,7 @@ export class VirtualTargetControlService {
       barcode: 'ST-001',
       target_type: 'Physical',
       createdBy: 'admin',
-      architecture: 'x86_64',
+      architecture: 'X86_64',
       os: 'Linux',
       platform: 'Physical',
       version: '6.0.185',
@@ -50,7 +50,7 @@ export class VirtualTargetControlService {
       barcode: 'ST-002',
       target_type: 'Physical',
       createdBy: 'admin',
-      architecture: 'x86_64',
+      architecture: 'X86_64',
       os: 'VxWorks',
       platform: 'Physical',
       version: '6.0.185',
@@ -86,7 +86,7 @@ export class VirtualTargetControlService {
       barcode: 'ST-003',
       target_type: 'Physical',
       createdBy: 'user2',
-      architecture: 'x86_64',
+      architecture: 'X86_64',
       os: 'Linux',
       platform: 'Physical',
       version: '6.0.190',
@@ -122,7 +122,7 @@ export class VirtualTargetControlService {
       barcode: 'ST-004',
       target_type: 'Physical',
       createdBy: 'user1',
-      architecture: 'x86_64',
+      architecture: 'X86_64',
       os: 'Linux',
       platform: 'Physical',
       version: '6.0.185',
@@ -158,7 +158,7 @@ export class VirtualTargetControlService {
       barcode: 'ST-005',
       target_type: 'Physical',
       createdBy: 'admin',
-      architecture: 'x86_64',
+      architecture: 'X86_64',
       os: 'VxWorks',
       platform: 'Physical',
       version: '6.0.190',
@@ -194,7 +194,7 @@ export class VirtualTargetControlService {
       barcode: 'ST-006',
       target_type: 'Physical',
       createdBy: 'user1',
-      architecture: 'x86_64',
+      architecture: 'X86_64',
       os: 'Linux',
       platform: 'Physical',
       version: '6.0.185',
@@ -291,6 +291,13 @@ export class VirtualTargetControlService {
     const target = this.mockVirtualTargets.find(t => t.id === targetId);
     if (target) {
       target.status = status;
+    }
+  }
+
+  updateVirtualTarget(target: VirtualTarget): void {
+    const index = this.mockVirtualTargets.findIndex(t => t.id === target.id);
+    if (index !== -1) {
+      this.mockVirtualTargets[index] = target;
     }
   }
 }

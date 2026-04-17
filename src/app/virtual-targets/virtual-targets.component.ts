@@ -9,6 +9,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { MenuModule } from 'primeng/menu';
 import { VirtualTarget } from '../shared/models/virtual-target.interface';
 import { VirtualTargetControlService } from '../core/services/virtual-target-control.service';
 import { VirtualTargetManagerService } from '../core/services/virtual-target-manager.service';
@@ -25,7 +26,8 @@ import { VirtualTargetManagerService } from '../core/services/virtual-target-man
     RadioButtonModule,
     CheckboxModule,
     DialogModule,
-    DropdownModule
+    DropdownModule,
+    MenuModule
   ],
   templateUrl: './virtual-targets.component.html',
   styleUrls: ['./virtual-targets.component.scss']
@@ -50,6 +52,35 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
   showAddDialog = false;
   newTarget: Partial<VirtualTarget> = {};
   addDialogPage: 1 | 2 = 1;
+
+  // View Details Dialog
+  showViewDetailsDialog = false;
+  viewTarget: Partial<VirtualTarget> = {};
+  viewDialogPage: 1 | 2 = 1;
+
+  // Edit Target Dialog
+  showEditDialog = false;
+  editTarget: Partial<VirtualTarget> = {};
+  editDialogPage: 1 | 2 = 1;
+
+  // Current row data for menu
+  currentMenuRowData: VirtualTarget | null = null;
+
+  // Get menu items with current row data
+  getMenuItems(row: VirtualTarget) {
+    return [
+      {
+        label: 'View',
+        icon: 'pi pi-eye',
+        command: () => this.openViewDetailsDialog(row)
+      },
+      {
+        label: 'Edit',
+        icon: 'pi pi-pencil',
+        command: () => this.openEditDialog(row)
+      }
+    ];
+  }
 
   showRemoveDialog = false;
   targetToRemove: VirtualTarget | null = null;
@@ -233,6 +264,84 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
     this.showAddDialog = false;
     this.newTarget = {};
     this.addDialogPage = 1;
+  }
+
+  // View Details Dialog Methods
+  openViewDetailsDialog(target: VirtualTarget): void {
+    this.viewTarget = { ...target };
+    this.viewDialogPage = 1;
+    this.showViewDetailsDialog = true;
+  }
+
+  viewNextPage(): void {
+    this.viewDialogPage = 2;
+  }
+
+  viewPrevPage(): void {
+    this.viewDialogPage = 1;
+  }
+
+  confirmViewDetails(): void {
+    this.showViewDetailsDialog = false;
+    this.viewTarget = {};
+    this.viewDialogPage = 1;
+  }
+
+  cancelViewDetails(): void {
+    this.showViewDetailsDialog = false;
+    this.viewTarget = {};
+    this.viewDialogPage = 1;
+  }
+
+  // Edit Target Dialog Methods
+  openEditDialog(target: VirtualTarget): void {
+    this.editTarget = { ...target };
+    this.editDialogPage = 1;
+    this.showEditDialog = true;
+  }
+
+  editNextPage(): void {
+    this.editDialogPage = 2;
+  }
+
+  editPrevPage(): void {
+    this.editDialogPage = 1;
+  }
+
+  saveEdit(): void {
+    const updatedTarget: VirtualTarget = {
+      ...this.editTarget as VirtualTarget,
+      id: this.editTarget.id || '',
+      name: this.editTarget.name || '',
+      barcode: this.editTarget.barcode || '',
+      target_type: this.editTarget.target_type || '',
+      createdBy: this.editTarget.createdBy || '',
+      architecture: this.editTarget.architecture,
+      os: this.editTarget.os,
+      platform: this.editTarget.platform || this.platformFilter,
+      favorite: this.editTarget.favorite || false,
+      is_singleton: this.editTarget.is_singleton || false,
+      isReservable: this.editTarget.isReservable || true,
+      status: this.editTarget.status,
+      gateway: this.editTarget.gateway,
+      ip: this.editTarget.ip,
+      user: this.editTarget.user,
+      pass: this.editTarget.pass
+    };
+
+    // Update the target in the service
+    this.virtualTargetControlService.updateVirtualTarget(updatedTarget);
+
+    this.showEditDialog = false;
+    this.editTarget = {};
+    this.editDialogPage = 1;
+    this.loadData();
+  }
+
+  cancelEdit(): void {
+    this.showEditDialog = false;
+    this.editTarget = {};
+    this.editDialogPage = 1;
   }
 
   onRemove(target: VirtualTarget): void {
