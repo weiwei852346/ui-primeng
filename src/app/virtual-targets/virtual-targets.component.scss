@@ -737,4 +737,25 @@
       }
     }
   }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+// Global menu styling (since menu is appended to body)
+::ng-deep .p-menu {
+  .p-menu-list {
+    .p-menuitem {
+      .p-menuitem-link {
+        background-color: #ffffff !important;
+
+        &:hover {
+          background-color: #f1f5f9 !important;
+        }
+      }
+    }
+  }
 }

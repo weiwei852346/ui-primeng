@@ -109,7 +109,8 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
     this.router.navigate(['/my-reservation']);
   }
 
-  reconnect(): void {    const targetId = this.targetInfo?.id || 'test';
+  reconnect(): void {
+    const targetId = this.targetInfo?.id || 'test';
     console.log('Reconnecting with targetId:', targetId);
     this.connectWebSocket(targetId);
   }
@@ -218,7 +219,25 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
       this.messageSubscription = null;
     }
 
-    this.websocketService.connect(targetId);
+    // Prepare connection information
+    const connectionInfo = {
+      gateway: this.targetInfo?.gateway || '192.168.2.182:3000',
+      ip: this.targetInfo?.ip || '172.28.0.3',
+      user: this.targetInfo?.user || 'root',
+      password: this.targetInfo?.pass || 'ljw123'
+    };
+
+    console.log('Connection info:', connectionInfo);
+
+    this.websocketService.connect(
+      targetId,
+      connectionInfo.gateway,
+      {
+        ip: connectionInfo.ip,
+        user: connectionInfo.user,
+        password: connectionInfo.password
+      }
+    );
 
     this.messageSubscription = this.websocketService.getMessages().subscribe(message => {
       console.log('Received message from WebSocket:', message);
