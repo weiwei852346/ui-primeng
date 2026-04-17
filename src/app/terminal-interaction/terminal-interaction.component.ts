@@ -35,6 +35,7 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
 
   connectionStatus: TerminalConnectionStatus = { connected: false };
   targetInfo: VirtualTarget | null = null;
+  isFullscreen: boolean = false;
 
   constructor(
     private websocketService: WebsocketTerminalService,
@@ -43,7 +44,7 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
 
   ngOnInit(): void {
     // const navigation = this.router.getCurrentNavigation();
-    this.targetInfo = history.state?.['target'] as VirtualTarget;
+    this.targetInfo = history.state?.['target'] as any; // 使用any类型来处理
     console.log('target info', this.targetInfo)
 
     console.log('Terminal Interaction - targetInfo:', this.targetInfo);
@@ -53,6 +54,23 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
       console.log('Connection status changed:', status);
     });
     this.subscriptions.push(statusSub);
+  }
+
+  getFormattedReserveTime(): string {
+    if (this.targetInfo && 'reservedAt' in this.targetInfo) {
+      const reservedAt = (this.targetInfo as any).reservedAt;
+      if (reservedAt instanceof Date) {
+        return reservedAt.toLocaleString('en-US', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      }
+    }
+    return 'Not reserved';
   }
 
   ngAfterViewInit(): void {
@@ -96,6 +114,27 @@ export class TerminalInteractionComponent implements OnInit, AfterViewInit, OnDe
 
   disconnect(): void {
     this.websocketService.disconnect();
+  }
+
+  toggleFullscreen(): void {
+    this.isFullscreen = !this.isFullscreen;
+    console.log('Toggle fullscreen called, isFullscreen:', this.isFullscreen);
+
+    const terminalContainer = this.terminalContainer?.nativeElement;
+    if (!terminalContainer) {
+      console.error('Terminal container not found');
+      return;
+    }
+
+    if (this.isFullscreen) {
+      console.log('Entering fullscreen within browser page');
+      terminalContainer.classList.add('terminal-fullscreen');
+      this.fitAddon?.fit();
+    } else {
+      console.log('Exiting fullscreen');
+      terminalContainer.classList.remove('terminal-fullscreen');
+      this.fitAddon?.fit();
+    }
   }
 
   private initTerminal(): void {

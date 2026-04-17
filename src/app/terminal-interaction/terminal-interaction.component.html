@@ -21,7 +21,11 @@
         </div>
 
         <!-- xterm.js 容器 -->
-        <div #terminalContainer class="terminal-container"></div>
+        <div #terminalContainer class="terminal-container">
+          <div class="terminal-fullscreen-toggle" (click)="toggleFullscreen()">
+            <i class="pi pi-expand" [ngClass]="{'pi-compress': isFullscreen}"></i>
+          </div>
+        </div>
       </div>
     </ng-template>
 
@@ -53,6 +57,10 @@
           <div class="info-item">
             <i class="pi pi-microchip"></i>
             <span>{{ targetInfo?.architecture }}</span>
+          </div>
+          <div class="info-item" *ngIf="targetInfo">
+            <i class="pi pi-clock" [ngClass]="{'text-blue-500': targetInfo && 'reservedAt' in targetInfo}"></i>
+            <span>{{ getFormattedReserveTime() }}</span>
           </div>
           <!-- <div class="info-item">
             <i class="pi pi-circle" [ngClass]="{'text-green-500': targetInfo?.status === 'available', 'text-red-500': targetInfo?.status === 'in_use'}"></i>
