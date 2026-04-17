@@ -240,6 +240,27 @@
               </div>
             </div>
 
+            <div class="detail-section">
+              <h4>Connection Information</h4>
+              <div class="detail-row">
+                <label>Gateway</label>
+                <span>{{ selectedTargetForDetail.gateway || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>IP</label>
+                <span>{{ selectedTargetForDetail.ip || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>User</label>
+                <span>{{ selectedTargetForDetail.user || '-' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Password</label>
+                <span *ngIf="selectedTargetForDetail.pass">••••••••</span>
+                <span *ngIf="!selectedTargetForDetail.pass">-</span>
+              </div>
+            </div>
+
             <div class="detail-actions">
               <p-button label="RESERVE"
                         [disabled]="!selectedTargetForDetail.isReservable || !selectedTargetForDetail.createdBy || selectedTargetForDetail.status === 'in_use'"
