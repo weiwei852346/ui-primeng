@@ -22,11 +22,48 @@
   <!-- Search Input -->
   <div class="search-container">
     <div class="search-left">
-      <span class="p-input-icon-left">
+      <div class="search-mode-switch">
+        <p-radioButton name="searchMode"
+                       value="search"
+                       [(ngModel)]="searchMode"
+                       label="Search"
+                       (onClick)="onSearchModeChange()"></p-radioButton>
+        <p-radioButton name="searchMode"
+                       value="ai"
+                       [(ngModel)]="searchMode"
+                       label="AI Search"
+                       (onClick)="onSearchModeChange()"></p-radioButton>
+      </div>
+
+      <span class="p-input-icon-left" *ngIf="searchMode === 'search'">
         <i class="pi pi-search"></i>
         <input pInputText type="text" [(ngModel)]="searchText"
                (input)="onSearch()" placeholder="Search by name or ID" />
       </span>
+
+      <span class="p-input-icon-left" *ngIf="searchMode === 'ai'">
+        <i class="pi pi-sparkles"></i>
+        <input pInputText
+               type="text"
+               [(ngModel)]="aiFilterText"
+               (keydown.enter)="applyAiFilter()"
+               placeholder="Describe targets, e.g. available virtual ARM Linux boards" />
+      </span>
+
+      <p-button *ngIf="searchMode === 'ai'"
+                label="AI Search"
+                icon="pi pi-bolt"
+                severity="info"
+                [loading]="aiLoading"
+                [disabled]="aiLoading"
+                (onClick)="applyAiFilter()"></p-button>
+
+      <p-button *ngIf="searchMode === 'ai'"
+                label="Reset"
+                icon="pi pi-refresh"
+                severity="secondary"
+                [disabled]="!usingAiFilter"
+                (onClick)="clearAiFilter()"></p-button>
 
       <!-- Show Favorites Toggle -->
       <p-checkbox [(ngModel)]="showFavoritesOnly"
@@ -52,28 +89,7 @@
     </div>
   </div>
 
-  <div class="ai-filter-container">
-    <span class="p-input-icon-left ai-input">
-      <i class="pi pi-sparkles"></i>
-      <input pInputText
-             type="text"
-             [(ngModel)]="aiFilterText"
-             placeholder="AI filter (example: find available virtual ARM Linux boards for testing)" />
-    </span>
-    <p-button label="AI Filter"
-              icon="pi pi-bolt"
-              severity="info"
-              [loading]="aiLoading"
-              [disabled]="aiLoading"
-              (onClick)="applyAiFilter()"></p-button>
-    <p-button label="Reset AI"
-              icon="pi pi-refresh"
-              severity="secondary"
-              [disabled]="!usingAiFilter"
-              (onClick)="clearAiFilter()"></p-button>
-  </div>
-
-  <div class="ai-reasoning" *ngIf="aiReasoning">
+  <div class="ai-reasoning" *ngIf="searchMode === 'ai' && aiReasoning">
     <strong>Agent:</strong> {{ aiReasoning }}
   </div>
 

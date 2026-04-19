@@ -41,7 +41,8 @@ Navigate to `http://localhost:4200/`
 
 ## AI Agent (Board Filter)
 
-This project now includes a simple local agent service with 30 built-in boards.
+This project includes a simple local agent service for parsing natural language into filter conditions.
+Target data remains in frontend mock services.
 
 Start agent server:
 

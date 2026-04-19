@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { VirtualTarget } from '../../shared/models/virtual-target.interface';
-
-export interface AgentFilterRequest {
+export interface AgentParseRequest {
   query: string;
-  platformFilter: 'Physical' | 'Virtual';
-  searchText: string;
-  showFavoritesOnly: boolean;
+  options?: {
+    platforms?: string[];
+    architectures?: string[];
+    os?: string[];
+    statuses?: string[];
+  };
 }
 
 export interface AgentParsedFilters {
@@ -19,16 +20,14 @@ export interface AgentParsedFilters {
   keywords: string[];
 }
 
-export interface AgentFilterResult {
-  total: number;
+export interface AgentParseResult {
   reasoning: string;
   parsedFilters: AgentParsedFilters;
-  targets: VirtualTarget[];
 }
 
-interface AgentFilterResponse {
+interface AgentParseResponse {
   status: string;
-  data: AgentFilterResult;
+  data: AgentParseResult;
 }
 
 @Injectable({
@@ -39,7 +38,7 @@ export class AgentBoardService {
 
   constructor(private http: HttpClient) {}
 
-  filterBoards(payload: AgentFilterRequest): Observable<AgentFilterResponse> {
-    return this.http.post<AgentFilterResponse>(`${this.baseUrl}/api/agent/filter`, payload);
+  parseFilters(payload: AgentParseRequest): Observable<AgentParseResponse> {
+    return this.http.post<AgentParseResponse>(`${this.baseUrl}/api/agent/parse`, payload);
   }
 }

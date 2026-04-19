@@ -13,7 +13,7 @@ import { MenuModule } from 'primeng/menu';
 import { VirtualTarget } from '../shared/models/virtual-target.interface';
 import { VirtualTargetControlService } from '../core/services/virtual-target-control.service';
 import { VirtualTargetManagerService } from '../core/services/virtual-target-manager.service';
-import { AgentBoardService } from '../core/services/agent-board.service';
+import { AgentBoardService, AgentParsedFilters } from '../core/services/agent-board.service';
 
 @Component({
   selector: 'app-virtual-targets',
@@ -36,6 +36,7 @@ import { AgentBoardService } from '../core/services/agent-board.service';
 export class VirtualTargetsComponent implements OnInit, OnDestroy {
   tableLoading = true;
   aiLoading = false;
+  searchMode: 'search' | 'ai' = 'search';
   tableRows: VirtualTarget[] = [];
   pagination = { total: 0, offset: 0, pageSize: 50 };
   platformFilter: 'Physical' | 'Virtual' = 'Physical';
@@ -44,6 +45,7 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
   aiFilterText = '';
   aiReasoning = '';
   usingAiFilter = false;
+  aiParsedFilters: AgentParsedFilters | null = null;
   sortBy = { column: 'name', order: 'ASC' };
 
   // View mode: 'list' or 'columns'
@@ -157,6 +159,10 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
   }
 
   onPlatformChange(): void {
+    if (this.searchMode === 'ai' && this.usingAiFilter && this.aiParsedFilters) {
+      this.applyLocalAiFilters(this.aiParsedFilters);
+      return;
+    }
     this.loadData();
   }
 
@@ -165,12 +171,34 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
   }
 
   onShowFavoritesChange(): void {
+    if (this.searchMode === 'ai' && this.usingAiFilter && this.aiParsedFilters) {
+      this.applyLocalAiFilters(this.aiParsedFilters);
+      return;
+    }
     this.loadData();
   }
 
   onSort(event: any) {
     this.sortBy.column = event.field;
     this.sortBy.order = event.order === 1 ? 'ASC' : 'DESC';
+    if (this.searchMode === 'ai' && this.usingAiFilter && this.aiParsedFilters) {
+      this.applyLocalAiFilters(this.aiParsedFilters);
+      return;
+    }
+    this.loadData();
+  }
+
+  onSearchModeChange(): void {
+    if (this.searchMode === 'search') {
+      this.usingAiFilter = false;
+      this.aiParsedFilters = null;
+      this.aiReasoning = '';
+      this.aiLoading = false;
+      this.loadData();
+      return;
+    }
+
+    this.searchText = '';
     this.loadData();
   }
 
@@ -181,22 +209,23 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
 
     this.tableLoading = true;
     this.aiLoading = true;
-    this.usingAiFilter = true;
 
     this.agentBoardService
-      .filterBoards({
+      .parseFilters({
         query: this.aiFilterText.trim(),
-        platformFilter: this.platformFilter,
-        searchText: this.searchText,
-        showFavoritesOnly: this.showFavoritesOnly
+        options: {
+          platforms: ['Physical', 'Virtual'],
+          architectures: ['X86_64', 'ARM', 'aarch64', 'riscv64'],
+          os: ['Linux', 'Ubuntu', 'Debian', 'VxWorks', 'Harmony', 'Android'],
+          statuses: ['available', 'in_use']
+        }
       })
       .subscribe({
         next: (response) => {
-          this.tableRows = response.data.targets;
-          this.pagination.total = response.data.total;
+          this.usingAiFilter = true;
+          this.aiParsedFilters = response.data.parsedFilters;
           this.aiReasoning = response.data.reasoning;
-          this.tableLoading = false;
-          this.aiLoading = false;
+          this.applyLocalAiFilters(response.data.parsedFilters);
         },
         error: (error: unknown) => {
           const fallbackMessage = error instanceof Error ? error.message : 'Agent request failed';
@@ -209,9 +238,79 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
 
   clearAiFilter(): void {
     this.usingAiFilter = false;
+    this.aiParsedFilters = null;
     this.aiReasoning = '';
     this.aiFilterText = '';
     this.loadData();
+  }
+
+  private applyLocalAiFilters(parsedFilters: AgentParsedFilters): void {
+    this.tableLoading = true;
+
+    const baseFilters = {
+      platform: this.platformFilter,
+      targetName: '',
+      showFavoritesOnly: this.showFavoritesOnly,
+      sortBy: this.sortBy
+    };
+
+    this.virtualTargetControlService
+      .getVirtualTargetTemplates(baseFilters, this.pagination)
+      .subscribe({
+        next: (response) => {
+          const filteredRows = response.data.filter((target) =>
+            this.matchesAiFilters(target, parsedFilters)
+          );
+
+          this.tableRows = filteredRows;
+          this.pagination.total = filteredRows.length;
+          this.tableLoading = false;
+          this.aiLoading = false;
+        },
+        error: () => {
+          this.tableRows = [];
+          this.pagination.total = 0;
+          this.tableLoading = false;
+          this.aiLoading = false;
+        }
+      });
+  }
+
+  private matchesAiFilters(target: VirtualTarget, parsedFilters: AgentParsedFilters): boolean {
+    if (parsedFilters.platform && target.platform !== parsedFilters.platform) {
+      return false;
+    }
+
+    if (
+      parsedFilters.architectures.length > 0 &&
+      !parsedFilters.architectures.includes(target.architecture || '')
+    ) {
+      return false;
+    }
+
+    if (parsedFilters.os.length > 0 && !parsedFilters.os.includes(target.os || '')) {
+      return false;
+    }
+
+    if (parsedFilters.status && target.status !== parsedFilters.status) {
+      return false;
+    }
+
+    if (parsedFilters.mustBeReservable !== null && target.isReservable !== parsedFilters.mustBeReservable) {
+      return false;
+    }
+
+    if (parsedFilters.keywords.length > 0) {
+      const haystack = `${target.name} ${target.barcode} ${target.architecture || ''} ${target.os || ''} ${target.createdBy || ''} ${target.target_type}`.toLowerCase();
+      const hasKeyword = parsedFilters.keywords.some((keyword) =>
+        haystack.includes(String(keyword).toLowerCase())
+      );
+      if (!hasKeyword) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   setViewMode(mode: 'list' | 'columns') {
