@@ -9,6 +9,11 @@ services:
       - "80:80"
     environment:
       - NGINX_PORT=80
+      - AGENT_HOST=127.0.0.1
+      - AGENT_PORT=8787
+      - GLM_API_KEY=${GLM_API_KEY:-}
+      - GLM_MODEL=${GLM_MODEL:-glm-4.5}
+      - GLM_BASE_URL=${GLM_BASE_URL:-https://open.bigmodel.cn/api/paas/v4/chat/completions}
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     restart: unless-stopped

@@ -1,6 +1,6 @@
-# 多阶段构建Dockerfile - 适合Linux x86_64架构部署
+# 多阶段构建Dockerfile - 前端 + Agent 单镜像部署
 
-# 构建阶段 - 使用轻量级Node.js镜像
+# 构建阶段
 FROM node:18-alpine AS builder
 
 # 设置工作目录
@@ -19,20 +19,29 @@ COPY . .
 # 构建Angular应用（生产模式）
 RUN npm run build
 
-# 生产阶段 - 使用轻量级NGINX镜像
-FROM nginx:alpine AS production
+# 运行阶段（同一容器内启动 NGINX + Agent）
+FROM node:18-alpine AS production
 
-# 设置环境变量
-ENV NGINX_PORT=80
+RUN apk add --no-cache nginx
 
-# 复制NGINX配置文件
-COPY nginx.conf /etc/nginx/nginx.conf
+ENV NGINX_PORT=80 \
+    AGENT_HOST=127.0.0.1 \
+    AGENT_PORT=8787 \
+    GLM_MODEL=glm-4.5 \
+    GLM_BASE_URL=https://open.bigmodel.cn/api/paas/v4/chat/completions
 
-# 复制构建好的Angular应用
+RUN mkdir -p /run/nginx /var/log/nginx /etc/nginx/http.d /opt/app
+
+# 拷贝前端构建产物
 COPY --from=builder /app/dist/ui-primeng/browser /usr/share/nginx/html
 
-# 暴露端口
+# 拷贝 Agent 与启动脚本
+COPY agent /opt/app/agent
+COPY docker/start.sh /opt/app/start.sh
+COPY nginx.conf /etc/nginx/nginx.conf
+
+RUN chmod +x /opt/app/start.sh
+
 EXPOSE 80
 
-# 启动NGINX
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/opt/app/start.sh"]

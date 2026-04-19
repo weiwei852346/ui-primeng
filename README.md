@@ -65,6 +65,16 @@ Then start frontend:
 npm start
 ```
 
+## Docker (Frontend + Agent in One Container)
+
+`docker-compose` now runs frontend (NGINX) and agent (Node.js) in the same `ui-primeng` container.
+
+Pass GLM token with environment variable:
+
+```bash
+GLM_API_KEY=your_token docker-compose up -d --build
+```
+
 ## Build
 
 Build the project:

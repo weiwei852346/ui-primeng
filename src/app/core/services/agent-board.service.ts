@@ -34,7 +34,7 @@ interface AgentParseResponse {
   providedIn: 'root'
 })
 export class AgentBoardService {
-  private readonly baseUrl = 'http://localhost:8787';
+  private readonly baseUrl = '/api/agent';
 
   constructor(private http: HttpClient) {}
 

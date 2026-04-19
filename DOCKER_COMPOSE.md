@@ -2,7 +2,9 @@
 
 ## 🐳 Docker Compose部署
 
-本项目已配置好Docker Compose，支持单服务部署，便于后续扩展多个服务。
+本项目已配置好Docker Compose，`ui-primeng` 单镜像内同时运行：
+- Angular 静态资源（NGINX）
+- Agent 服务（Node.js，供 AI 搜索解析过滤条件）
 
 ### 基本命令
 
@@ -35,6 +37,9 @@ services:
       - "80:80"          # 主机端口:容器端口
     environment:
       - NGINX_PORT=80    # NGINX监听端口
+      - GLM_API_KEY=${GLM_API_KEY:-}  # GLM Token
+      - GLM_MODEL=${GLM_MODEL:-glm-4.5}
+      - GLM_BASE_URL=${GLM_BASE_URL:-https://open.bigmodel.cn/api/paas/v4/chat/completions}
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro  # 挂载NGINX配置文件
     restart: unless-stopped  #除非手动停止，否则自动重启
@@ -60,6 +65,15 @@ networks:
 
 当前支持的环境变量：
 - `NGINX_PORT`: NGINX监听端口（默认80）
+- `GLM_API_KEY`: GLM Token（可选，不传则走启发式解析）
+- `GLM_MODEL`: GLM 模型名（默认 `glm-4.5`）
+- `GLM_BASE_URL`: GLM API 地址
+
+示例：
+
+```bash
+GLM_API_KEY=your_token docker-compose up -d --build
+```
 
 ### 卷挂载
 
