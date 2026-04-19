@@ -52,6 +52,31 @@
     </div>
   </div>
 
+  <div class="ai-filter-container">
+    <span class="p-input-icon-left ai-input">
+      <i class="pi pi-sparkles"></i>
+      <input pInputText
+             type="text"
+             [(ngModel)]="aiFilterText"
+             placeholder="AI filter (example: find available virtual ARM Linux boards for testing)" />
+    </span>
+    <p-button label="AI Filter"
+              icon="pi pi-bolt"
+              severity="info"
+              [loading]="aiLoading"
+              [disabled]="aiLoading"
+              (onClick)="applyAiFilter()"></p-button>
+    <p-button label="Reset AI"
+              icon="pi pi-refresh"
+              severity="secondary"
+              [disabled]="!usingAiFilter"
+              (onClick)="clearAiFilter()"></p-button>
+  </div>
+
+  <div class="ai-reasoning" *ngIf="aiReasoning">
+    <strong>Agent:</strong> {{ aiReasoning }}
+  </div>
+
   <!-- Main Content Area with Conditional Views -->
   <div class="main-content" [class.column-view-mode]="viewMode === 'columns'">
 

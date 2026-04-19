@@ -160,6 +160,36 @@
     }
   }
 
+  .ai-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+
+    .ai-input {
+      flex: 1;
+      max-width: 760px;
+
+      input {
+        width: 100%;
+        padding: 0.625rem 1rem 0.625rem 2.5rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  .ai-reasoning {
+    margin-bottom: 1rem;
+    padding: 0.75rem 0.875rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    color: #1e3a8a;
+    font-size: 0.9rem;
+  }
+
   ::ng-deep .p-datatable {
     border-radius: 6px;
     overflow: hidden;

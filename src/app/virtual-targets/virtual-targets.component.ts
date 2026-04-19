@@ -13,6 +13,7 @@ import { MenuModule } from 'primeng/menu';
 import { VirtualTarget } from '../shared/models/virtual-target.interface';
 import { VirtualTargetControlService } from '../core/services/virtual-target-control.service';
 import { VirtualTargetManagerService } from '../core/services/virtual-target-manager.service';
+import { AgentBoardService } from '../core/services/agent-board.service';
 
 @Component({
   selector: 'app-virtual-targets',
@@ -34,11 +35,15 @@ import { VirtualTargetManagerService } from '../core/services/virtual-target-man
 })
 export class VirtualTargetsComponent implements OnInit, OnDestroy {
   tableLoading = true;
+  aiLoading = false;
   tableRows: VirtualTarget[] = [];
   pagination = { total: 0, offset: 0, pageSize: 50 };
   platformFilter: 'Physical' | 'Virtual' = 'Physical';
   searchText = '';
   showFavoritesOnly = false;
+  aiFilterText = '';
+  aiReasoning = '';
+  usingAiFilter = false;
   sortBy = { column: 'name', order: 'ASC' };
 
   // View mode: 'list' or 'columns'
@@ -103,10 +108,12 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
     { label: 'Physical', value: 'Physical' },
     { label: 'Virtual', value: 'Virtual' }
   ];
+  private readonly boundTargetReleased = this.handleTargetReleased.bind(this);
 
   constructor(
     private virtualTargetControlService: VirtualTargetControlService,
     private virtualTargetManagerService: VirtualTargetManagerService,
+    private agentBoardService: AgentBoardService,
     private router: Router
   ) {}
 
@@ -114,11 +121,11 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
     this.loadData();
 
     // Listen for target release events
-    window.addEventListener('targetReleased', this.handleTargetReleased.bind(this));
+    window.addEventListener('targetReleased', this.boundTargetReleased);
   }
 
   ngOnDestroy() {
-    window.removeEventListener('targetReleased', this.handleTargetReleased.bind(this));
+    window.removeEventListener('targetReleased', this.boundTargetReleased);
   }
 
   handleTargetReleased(event: any) {
@@ -149,21 +156,61 @@ export class VirtualTargetsComponent implements OnInit, OnDestroy {
       });
   }
 
-  onPlatformChange() {
+  onPlatformChange(): void {
     this.loadData();
   }
 
-  onSearch() {
+  onSearch(): void {
     this.loadData();
   }
 
-  onShowFavoritesChange() {
+  onShowFavoritesChange(): void {
     this.loadData();
   }
 
   onSort(event: any) {
     this.sortBy.column = event.field;
     this.sortBy.order = event.order === 1 ? 'ASC' : 'DESC';
+    this.loadData();
+  }
+
+  applyAiFilter(): void {
+    if (this.aiLoading) {
+      return;
+    }
+
+    this.tableLoading = true;
+    this.aiLoading = true;
+    this.usingAiFilter = true;
+
+    this.agentBoardService
+      .filterBoards({
+        query: this.aiFilterText.trim(),
+        platformFilter: this.platformFilter,
+        searchText: this.searchText,
+        showFavoritesOnly: this.showFavoritesOnly
+      })
+      .subscribe({
+        next: (response) => {
+          this.tableRows = response.data.targets;
+          this.pagination.total = response.data.total;
+          this.aiReasoning = response.data.reasoning;
+          this.tableLoading = false;
+          this.aiLoading = false;
+        },
+        error: (error: unknown) => {
+          const fallbackMessage = error instanceof Error ? error.message : 'Agent request failed';
+          this.aiReasoning = `Agent filter failed: ${fallbackMessage}`;
+          this.tableLoading = false;
+          this.aiLoading = false;
+        }
+      });
+  }
+
+  clearAiFilter(): void {
+    this.usingAiFilter = false;
+    this.aiReasoning = '';
+    this.aiFilterText = '';
     this.loadData();
   }
 

@@ -39,6 +39,31 @@ npm start
 
 Navigate to `http://localhost:4200/`
 
+## AI Agent (Board Filter)
+
+This project now includes a simple local agent service with 30 built-in boards.
+
+Start agent server:
+
+```bash
+npm run agent:start
+```
+
+Optional GLM config (when not set, heuristic parsing is used):
+
+```bash
+export GLM_API_KEY=\"<your_glm_api_key>\"
+export GLM_MODEL=\"glm-4.5\"
+export GLM_BASE_URL=\"https://open.bigmodel.cn/api/paas/v4/chat/completions\"
+npm run agent:start
+```
+
+Then start frontend:
+
+```bash
+npm start
+```
+
 ## Build
 
 Build the project:
